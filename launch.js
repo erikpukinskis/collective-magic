@@ -51,57 +51,6 @@ library.define("tasks", function() { return [
 
 
 library.define(
-  "work",
-  function() {
-      var sessionsByTaskId = {}
-      var sessionsByCharacterId = {}
-
-      function addToList(lists, id, newItem) {
-        var list = lists[id]
-        if (!list) {
-          list = lists[id] = []
-        }
-        list.push(newItem)
-      }
-
-      var work = {
-        start: function(name, characterId, taskId, startTime) {
-          var session = {name: name, characterId: characterId, taskId: taskId, startTime: startTime}
-
-          addToList(sessionsByTaskId, taskId, session)
-          addToList(sessionsByCharacterId, characterId, session)
-        },
-        getCurrentAssignmentId: function(characterId) {
-          var sessions = sessionsByCharacterId[characterId]
-          if (!sessions) { return }
-          var session = sessions[sessions.length-1]
-          var hasStopped = !!session.stopTime
-          debugger
-          if (hasStopped) {
-            return
-          } else {
-           return session.taskId
-          }
-        },
-        stop: function(name, characterId, taskId, stopTime) {
-          var sessions = sessionsByCharacterId[characterId]
-          var session = sessions[sessions.length-1]
-          if (session.taskId != taskId) {
-            throw new Error("Trying to clock out of "+taskId+" but clocked into "+session.taskId)
-          }
-          session.stopTime = stopTime
-        },
-        sessionsForTask: function(taskId) {
-          return sessionsByTaskId[taskId] || []
-        }
-    }
-
-    return work
-  }
-)
-
-
-library.define(
   "post-button",
   ["web-element"],
   function(element) {
@@ -129,8 +78,8 @@ library.define(
 
 
 library.using(
-  [library.ref(), "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "work", "post-button"],
-  function(lib, host, BrowserBridge, element, bridgeModule, addHtml, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, work, postButton) {
+  [library.ref(), "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "post-button"],
+  function(lib, host, BrowserBridge, element, bridgeModule, addHtml, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
 
     var finishedTasks = []
     var finishedCount = 0
@@ -169,13 +118,13 @@ library.using(
         return
       }
       
-      var currentAssignmentId = work.getCurrentAssignmentId(meId)
+      var currentAssignmentId = punchClock.getCurrentAssignmentId(meId)
 
       console.log("Assignment is", currentAssignmentId)
 
       var workSessions = element(
         "ul",
-        work.sessionsForTask(nextTaskId).map(renderSession)
+        punchClock.sessionsForTask(nextTaskId).map(renderSession)
       )
 
       function renderSession(session) {
@@ -243,9 +192,9 @@ library.using(
       function clockOut(meId, taskId) {
         var name = character.getName(meId)
         var when = new Date().toString()
-        work.stop(name, meId, taskId, when)
+        punchClock.stop(name, meId, taskId, when)
 
-        workLog.do("work.stop", name, meId, taskId, when)
+        workLog.do("punchClock.stop", name, meId, taskId, when)
       }
 
       site.addRoute("post", "/finish", function(request, response) {
@@ -255,7 +204,7 @@ library.using(
         }
         finishedTasks[taskId] = true
         var meId = request.cookies.characterId
-        var isClockedIn = work.getCurrentAssignmentId(meId) == taskId
+        var isClockedIn = punchClock.getCurrentAssignmentId(meId) == taskId
 
         if (isClockedIn) {
           clockOut(meId, taskId)
@@ -275,8 +224,8 @@ library.using(
         var name = character.getName(meId)
         var when = new Date().toString()
 
-        work.start(name, meId, taskId, when)
-        workLog.do("work.start", name, meId, taskId, when)
+        punchClock.start(name, meId, taskId, when)
+        workLog.do("punchClock.start", name, meId, taskId, when)
 
         response.redirect("/assignment")
       })
@@ -285,7 +234,7 @@ library.using(
         var taskId = request.body.taskId
         var meId = request.cookies.characterId
 
-        if (work.getCurrentAssignmentId(meId) == taskId) {
+        if (punchClock.getCurrentAssignmentId(meId) == taskId) {
           clockOut(meId, taskId)
         }
 

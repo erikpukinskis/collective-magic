@@ -15,7 +15,8 @@
     "add-html": "*",
     "issue-bond": "*",
     "sell-bond": "*",
-    "someone-is-a-person": "*"
+    "someone-is-a-person": "*",
+    "punch-clock": "*"
   },
   "repository": {
     "type": "git",
