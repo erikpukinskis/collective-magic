@@ -78,8 +78,14 @@ library.define(
 
 
 library.using(
-  [library.ref(), "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "post-button"],
-  function(lib, host, BrowserBridge, element, bridgeModule, addHtml, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "post-button"],
+  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, bridgeModule, addHtml, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
+
+    watershedBonds.forEach(sellBond)
+
+    var line = element.style(".statements div", {
+      "margin-bottom": "10px",
+      "min-height": "1em"})
 
     var finishedTasks = []
     var finishedCount = 0

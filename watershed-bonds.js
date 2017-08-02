@@ -12,11 +12,14 @@ var library = require("module-library")(require)
 // AI asks "Does this mean yes, or no?
 
 
-library.using(
-  ["issue-bond", "sell-bond", "web-host", "basic-styles", "fs", "web-element"],
-  function(issueBond, sellBond, host, basicStyles, fs, element) {
+module.exports = library.export(
+  "watershed-bonds",
+  ["issue-bond"],
+  function(issueBond) {
 
-    var workshop = issueBond("workshop", [
+    var workshop = issueBond(null, "workshop", "Erik Pukinskis")
+
+    workshop.tasks([
       "Mark 12 inches from the end of each of the 12 foot 2x6s",
       "Mark 3 1/2 inches from the top of each of the 8 foot 4x4s",
       "Lay down two 4x4s, with a 2x6 across it, leaving the 3 1/2 inches free at the top, square and tack in place",
@@ -29,9 +32,9 @@ library.using(
       "Add brackets to the 2x6s at 3 foot 4 inches from each 2x4",
       "Screw 10 foot 2x4s into each bracket",
       "Screw down roofing into 2x4s with gasketed screws",
-      "Screw 8 ft 2x4s into ",])
+      "Screw 8 ft 2x4s into "])
 
-    workshop.addExpense([
+    workshop.expenses([
       ["Get drill bit for 4x4 bolts",  1, "$5.00"],
       ["Get drill", 1, "$100.00"],
       ["Get extension cord", 1, "$13.00"],
@@ -46,20 +49,26 @@ library.using(
       ["Get workshop 12ft corrugated", 5, "$140.00"],
       ["Get workshop 8' 2x4s", 7, "$56.00"],])
 
-    var tinyHouse3 = issueBond("Tiny House 3", [
+    var tinyHouse3 = issueBond(null, "Tiny House 3", "Erik Pukinskis")
+
+    tinyHouse3.tasks([
       "lay down steel"])
 
-    var pergola = issueBond("Pergola for mobile kitchen", [
+    var pergola = issueBond(null, "Pergola for mobile kitchen", "Erik Pukinskis")
+
+    pergola.tasks([
       "mark 12 inches from the end of each"])
 
     // Your kitchen is your mobile marketing heart
 
-    var kitchen = issueBond("Falafel Kitchen", [
+    var kitchen = issueBond(null, "Falafel Kitchen", "Erik Pukinskis")
+
+    kitchen.tasks([
       "Make poulish",
       "Make dough",
       "Make falafel sandwich"])
 
-    kitchen.addExpense([
+    kitchen.expenses([
       ["Flat top griddle station", 1, "$263.20"],
       "50 lb bag of flour",
       "Toaster oven",
@@ -84,14 +93,9 @@ library.using(
       "Tongs, bowl, silicone spatula",
       "Hand washing station"])
 
-    var watershed = issueBond("watershed", [
-      chickenCoop,
-      pond,
-      pergola,
-      kitchen,
-      tinyHouse3])
+    var pond = issueBond(null, "pond", "Erik Pukinskis")
 
-    var pond = issueBond("pond", [
+    pond.tasks([
       "roll two 2x4s into 8x16 tarp ", 
       "dig pond, build watershed, lay tarp", 
       "pavers and mortar, build compost basin", 
@@ -106,43 +110,33 @@ library.using(
       "fill pond",
       "plant lilies https://www.youtube.com/watch?v=mHpayuscOtM"])
 
-    var chickenCoop = issueBond("chicken coop", [
+    var chickenCoop = issueBond(null, "chicken coop", "Erik Pukinskis")
+
+    chickenCoop.tasks([
       "bolt corrugated roofing",
       "cut mortisse and tenon two sets of four 2x2s, four 2x2 rafters, and however many floor boards",
       "built chicken coop",
       "netting with stakes 8x8"])
 
-    var line = element.style(".statements div", {
-      "margin-bottom": "10px",
-      "min-height": "1em"})
+    var watershed = issueBond(null, "watershed", "Erik Pukinskis")
 
-
-    var catalog = element(".bonds")
-
-    var page = element(
-      ".lil-page",
-      element("h1", "Bond Catalog"),
-      catalog,
+    watershed.tasks([
+      chickenCoop,
+      pond,
+      pergola,
+      kitchen,
+      tinyHouse3])
 
     var bonds = [
       workshop,
       tinyHouse3,
       kitchen,
       watershed,
+      chickenCoop,
+      pond,
+      pergola,
     ]
 
-    bonds.forEach(function(bond) {
-      catalog.addChild(sellBond(bond))
-    }
-
-    for (var name in bonds) {
-      var price = bonds[name]
-      var button = element(".button", "Buy "+name+" bond - "+price)
-      page.addChildren(element("p", button, " "))}
-
-    host.onRequest(function(getBridge) {
-      var bridge = getBridge()
-      basicStyles.addTo(bridge)
-      bridge.send(page)})
-
-    return {}})
+    return bonds
+  }
+)
