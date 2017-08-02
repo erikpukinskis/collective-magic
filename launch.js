@@ -58,35 +58,8 @@ library.define("tasks", function() { return [
 ]})
 
 
-library.define(
-  "post-button",
-  ["web-element"],
-  function(element) {
-    function postButton(label, action, data) {
-      var form = element(
-        "form",
-        element.style({"display": "inline"}),
-        {method: "POST", action: action},[
-        element("input", {type: "submit", value: label}),
-      ])
-
-      if (data) {
-        for(var key in data) {
-          var field = element("input", {type: "hidden", name: key, value: data[key].toString()})
-          form.addChild(field)
-        }
-      }
-
-      return form
-    }
-
-    return postButton
-  }
-)
-
-
 library.using(
-  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "post-button"],
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "./post-button"],
   function(lib, watershedBonds, sellBond, host, BrowserBridge, element, bridgeModule, addHtml, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
 
     watershedBonds.forEach(sellBond)
@@ -133,8 +106,6 @@ library.using(
       }
       
       var currentAssignmentId = punchClock.getCurrentAssignmentId(meId)
-
-      console.log("Assignment is", currentAssignmentId)
 
       var workSessions = element(
         "ul",
@@ -196,10 +167,6 @@ library.using(
 
 
     
-    var getWork = [
-      element("a.button", "Give me work", {href: "/assignment"}),
-    ]
-
     host.onSite(function(site) {
       site.addRoute("get", "/assignment", giveAssignment)
 
@@ -261,7 +228,12 @@ library.using(
     host.onRequest(function(getBridge) {
       var bridge = getBridge()
       basicStyles.addTo(bridge)
-      bridge.send(getWork)
+      bridge.send([
+        element("h1", "Collective Magic"),
+        element("p", "An agent for everyone"),
+        element("p", element("a.button", "Give me work", {href: "/assignment"})),
+        element("p", element("a.button", "Buy bonds", {href: "/bond-catalog"})),
+      ])
     })
 
     // peace
