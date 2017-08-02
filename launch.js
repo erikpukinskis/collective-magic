@@ -6,7 +6,7 @@
 var library = require("module-library")(require)
 
 
-library.define("tasks", function() { return [
+library.define("collective-magic/launch-tasks", function() { return [
   "tap Give me work",
   "tap Choose a picture",
   "a picture appears",
@@ -59,8 +59,8 @@ library.define("tasks", function() { return [
 
 
 library.using(
-  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "bridge-module", "add-html", "tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "./post-button"],
-  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, bridgeModule, addHtml, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "collective-magic/launch-tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "./post-button"],
+  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
 
     watershedBonds.forEach(sellBond)
 

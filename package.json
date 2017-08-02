@@ -2,6 +2,7 @@
   "name": "collective-magic",
   "version": "0.0.0",
   "description": "An agency for everyone",
+  "main": "launch.js",
   "dependencies": {
     "module-library": "*",
     "web-host": "*",
@@ -9,10 +10,7 @@
     "basic-styles": "*",
     "browser-bridge": "*",
     "tell-the-universe": "*",
-    "bridge-module": "*",
-    "paint-on-picture": "*",
-    "html-painting": "*",
-    "add-html": "*",
+    
     "issue-bond": "*",
     "sell-bond": "*",
     "someone-is-a-person": "*",
