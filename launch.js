@@ -23,6 +23,9 @@ library.define("collective-magic/launch-tasks", function() { return [
   "tap Clock out",
   "tap It's done",
   "tap somewhere and a creature moves",
+
+  // -> U R HERE
+
   "tap House panel bond",
   "see Bond for sale: Issued by Erik",
   "see house panel build instructions",
@@ -30,9 +33,6 @@ library.define("collective-magic/launch-tasks", function() { return [
   "see labor estimate",
   "see bond cost with tax",
   "see bond interest rate",
-
-  // -> U R HERE
-
   "click Buy Bond - $100",
   "see You have purchased this bond!",
   "see \"Erik purchased this bond... payment pending\"",
