@@ -17,7 +17,7 @@ module.exports = library.export(
   ["issue-bond"],
   function(issueBond) {
 
-    var workshop = issueBond(null, "workshop", "Erik Pukinskis")
+    var workshop = issueBond(null, "Workshop", "Erik Pukinskis")
 
     workshop.tasks([
       "Mark 12 inches from the end of each of the 12 foot 2x6s",
@@ -93,7 +93,7 @@ module.exports = library.export(
       "Tongs, bowl, silicone spatula",
       "Hand washing station"])
 
-    var pond = issueBond(null, "pond", "Erik Pukinskis")
+    var pond = issueBond(null, "Pond", "Erik Pukinskis")
 
     pond.tasks([
       "roll two 2x4s into 8x16 tarp ", 
@@ -110,7 +110,7 @@ module.exports = library.export(
       "fill pond",
       "plant lilies https://www.youtube.com/watch?v=mHpayuscOtM"])
 
-    var chickenCoop = issueBond(null, "chicken coop", "Erik Pukinskis")
+    var chickenCoop = issueBond(null, "Chicken coop", "Erik Pukinskis")
 
     chickenCoop.tasks([
       "bolt corrugated roofing",
@@ -118,7 +118,7 @@ module.exports = library.export(
       "built chicken coop",
       "netting with stakes 8x8"])
 
-    var watershed = issueBond(null, "watershed", "Erik Pukinskis")
+    var watershed = issueBond(null, "Watershed", "Erik Pukinskis")
 
     watershed.tasks([
       chickenCoop,

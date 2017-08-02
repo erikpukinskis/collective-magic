@@ -25,6 +25,9 @@ library.define("tasks", function() { return [
   "tap somewhere and a creature moves",
   "tap Issue House panel bond",
   "see Bond for sale: Issued by Erik",
+
+  // -> U R HERE
+
   "click Buy Bond - $100",
   "see You have purchased this bond!",
   "see \"Erik purchased this bond... payment pending\"",
@@ -32,7 +35,7 @@ library.define("tasks", function() { return [
   "(click Cancel purchase)",
   "Erik gets a text: so-and-so bought a bond click to generate receipt",
   "Someone clicks tick, they get the first task from the bond: \"Reserve a truck\" Are you ready to clock in?",
-  "Tap Clock in. Rent the truck.",
+  "Tap Clock in to rent the truck",
   "Tap Clock out",
   "Bondholder gets notice of work",
   "They tap \"Send Invoice\", Erik gets a text",
