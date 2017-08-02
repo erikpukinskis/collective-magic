@@ -23,8 +23,13 @@ library.define("tasks", function() { return [
   "tap Clock out",
   "tap It's done",
   "tap somewhere and a creature moves",
-  "tap Issue House panel bond",
+  "tap House panel bond",
   "see Bond for sale: Issued by Erik",
+  "see house panel build instructions",
+  "see materials list",
+  "see labor estimate",
+  "see bond cost with tax",
+  "see bond interest rate",
 
   // -> U R HERE
 
@@ -250,11 +255,16 @@ library.using(
         response.redirect("/assignment")
       })
 
-      site.addRoute("get", "/give-me-work", baseBridge.requestHandler(getWork))
-
       someoneIsAPerson.prepareSite(site)
     })
 
+    host.onRequest(function(getBridge) {
+      var bridge = getBridge()
+      basicStyles.addTo(bridge)
+      bridge.send(getWork)
+    })
+
+    // peace
   }
 )
 
