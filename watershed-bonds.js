@@ -12,10 +12,93 @@ var library = require("module-library")(require)
 // AI asks "Does this mean yes, or no?
 
 
+// ask: what do we all need more of? write down answers. ask: how do we measure how much we have? ask: where does it come from? ask: what are hypotheses about what leads to more of that?
+
+
+// how to fit in to the ecological niche at your wavelength
+
+
+library.define(
+  "dimension-text",
+  function() {
+
+    function dimensionText(number, options) {
+      var integer = Math.floor(number)
+      var remainder = number - integer
+      var sixteenths = Math.round(remainder*16)
+
+      if (sixteenths == 16) {
+        integer++
+      } else if (sixteenths == 0) {
+        // nothing
+      } else if (sixteenths == 8) {
+        var fraction = "1/2"
+      } else if (sixteenths % 4 == 0) {
+        var fraction = (sixteenths/4)+"/4"
+      } else if (sixteenths % 2 == 0) {
+        var fraction = (sixteenths/2)+"/8"
+      } else {
+        var fraction = sixteenths+"/16"
+      }
+
+      if (fraction) {
+        fraction += "&Prime;"
+      }
+
+      if (integer == 0 && sixteenths != 0) {
+        var string = fraction
+      } else {
+        var string = integer.toString()+"&prime;"
+        if (fraction) {
+          string += "&nbsp;"+fraction
+        }
+      }
+
+      return string
+    }
+
+
+    return dimensionText
+  }
+)
+
+
+library.define(
+  "to-dollar-string",
+  function() {
+    return function toDollarString(cents) {
+
+      if (!cents) {
+        throw new Error(cents+" is not pennies")
+      }
+
+      if (cents < 0) {
+        var negative = true
+        cents = Math.abs(cents)
+      }
+
+      cents = Math.ceil(cents)
+
+      var dollars = Math.floor(cents / 100)
+      var remainder = cents - dollars*100
+      if (remainder < 10) {
+        remainder = "0"+remainder
+      }
+
+      var string = "$"+dollars+"."+remainder
+
+      if (negative) {
+        string = "-"+string
+      }
+
+      return string
+    }
+  }
+)
 module.exports = library.export(
   "watershed-bonds",
-  ["issue-bond"],
-  function(issueBond) {
+  ["issue-bond", "dimension-text", "to-dollar-string"],
+  function(issueBond, inches, toDollarString) {
 
     var workshop = issueBond(null, "Workshop", "Erik Pukinskis")
 
@@ -49,10 +132,70 @@ module.exports = library.export(
       ["Get workshop 12ft corrugated", 5, "$140.00"],
       ["Get workshop 8' 2x4s", 7, "$56.00"],])
 
+    var aPanel = issueBond("a-panel", "Wall panel A", "Erik Pukinskis")
+
+    // let's assume for now that the tools and materials are already there. I *think* that is going to need to be handled separately. Like bond.tools(["workshop", "skil saw", "etc"]) and the acquisition of materials is implicit in bond.expenses. There is an implicit process which is paying the expenses and bringing the materials to the fulfillment site.
+
+    // Basic materials
+    var studWidth = 1.25
+    var studDepth = 2.5
+
+    // House parameters
+    var sheathingOverlap = 1/2*studWidth
+    var blockWidth = 1/2*studDepth
+    var wallHeight = 88
+
+    // A panel parameters
+    var trackLength = 48 - studWidth - sheathingOverlap - blockWidth
+    var insideSheathingWidth = 48 - studDepth - sheathingOverlap*3 - blockWidth 
+
+    aPanel.tasks([
+      "cut 4 steel studs to "+inches(wallHeight),
+      "cut 2 steel tracks to "+inches(trackLength),
+      "plane an "+inches(wallHeight)+" inch 2x6 to 1 1/4 inch thick, and cut three 1 1/14 inch slices out of it",
+      "cut finish plywood to "+inches(wallHeight)+" by "+inches(insideSheathingWidth),
+      "cut rough plywood to "+inches(wallHeight)+" by "+inches(insideSheathingWidth),
+      "crimp steel framing together",
+      "square and screw down finish plywood",
+      "flip, insulate, and screw down rough plywood, with a 3 inch gap below, and a "+inches(studDepth)+" gap to the left",
+    ])
+
+    var PRICE_FACTOR = 1.2 // tax and price fluctuation
+    var HOURLY_RATE = 1500
+    var WAGE_FACTOR = 1.5 // payroll tax, etc
+
+    function purchase(amt) {
+      return toDollarString(amt*PRICE_FACTOR)
+    }
+
+    function labor(hours) {
+      return toDollarString(hours*HOURLY_RATE*WAGE_FACTOR)
+    }
+
+    aPanel.expenses({
+      "8 foot steel studs, 4x": purchase(357*4),
+      "10 foot steel track, 1x": purchase(433),
+      "3/8 inch rouch plywood, 1x": purchase(1795),
+      "3/8 inch finish plywood, 1x": purchase(1533),
+      "16 inch insulation, 22 feet": purchase(47*22),
+      "screws, 60x": purchase(300),
+      "labor, 4 hours": labor(4)
+    })
+
+
+    var zPanel = issueBond("z-panel", "Wall panel Z", "Erik Pukinskis")
+
+    var floorPanel = issueBond("floor-panel", "Floor panel", "Erik Pukinskis")
+
+    var jambPanel = issueBond("jamb-panel", "Door jamb panel", "Erik Pukinskis")
+
     var tinyHouse3 = issueBond(null, "Tiny House 3", "Erik Pukinskis")
 
     tinyHouse3.tasks([
-      "lay down steel"])
+
+    ])
+
+    var tinyHouse3 = issueBond(null, "Tiny House 3", "Erik Pukinskis")
 
     var pergola = issueBond(null, "Pergola for mobile kitchen", "Erik Pukinskis")
 
@@ -128,6 +271,10 @@ module.exports = library.export(
       tinyHouse3])
 
     var bonds = [
+      aPanel,
+      zPanel,
+      floorPanel,
+      jambPanel,
       workshop,
       tinyHouse3,
       kitchen,
