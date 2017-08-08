@@ -97,12 +97,12 @@ library.define(
 )
 module.exports = library.export(
   "watershed-bonds",
-  ["issue-bond", "dimension-text", "to-dollar-string"],
-  function(issueBond, inches, toDollarString) {
+  ["issue-bond", "dimension-text", "to-dollar-string", "sell-bond"],
+  function(issueBond, inches, toDollarString, sellBond) {
 
-    var workshop = issueBond(null, "Workshop", "Erik Pukinskis")
+    issueBond("workshop", "Workshop", "Erik Pukinskis")
 
-    workshop.tasks([
+    issueBond.tasks("workshop", [
       "Mark 12 inches from the end of each of the 12 foot 2x6s",
       "Mark 3 1/2 inches from the top of each of the 8 foot 4x4s",
       "Lay down two 4x4s, with a 2x6 across it, leaving the 3 1/2 inches free at the top, square and tack in place",
@@ -117,7 +117,7 @@ module.exports = library.export(
       "Screw down roofing into 2x4s with gasketed screws",
       "Screw 8 ft 2x4s into "])
 
-    workshop.expenses([
+    issueBond.expenses("workshop", [
       ["Get drill bit for 4x4 bolts",  1, "$5.00"],
       ["Get drill", 1, "$100.00"],
       ["Get extension cord", 1, "$13.00"],
@@ -132,7 +132,7 @@ module.exports = library.export(
       ["Get workshop 12ft corrugated", 5, "$140.00"],
       ["Get workshop 8' 2x4s", 7, "$56.00"],])
 
-    var aPanel = issueBond("a-panel", "Wall panel A", "Erik Pukinskis")
+    issueBond("a-panel", "Wall panel A", "Erik Pukinskis")
 
     // let's assume for now that the tools and materials are already there. I *think* that is going to need to be handled separately. Like bond.tools(["workshop", "skil saw", "etc"]) and the acquisition of materials is implicit in bond.expenses. There is an implicit process which is paying the expenses and bringing the materials to the fulfillment site.
 
@@ -149,7 +149,9 @@ module.exports = library.export(
     var trackLength = 48 - studWidth - sheathingOverlap - blockWidth
     var insideSheathingWidth = 48 - studDepth - sheathingOverlap*3 - blockWidth 
 
-    aPanel.tasks([
+    issueBond.tasks("a-panel", [
+      "reserve a truck",
+      "buy materials",
       "cut 4 steel studs to "+inches(wallHeight),
       "cut 2 steel tracks to "+inches(trackLength),
       "plane an "+inches(wallHeight)+" inch 2x6 to 1 1/4 inch thick, and cut three 1 1/14 inch slices out of it",
@@ -172,7 +174,8 @@ module.exports = library.export(
       return toDollarString(hours*HOURLY_RATE*WAGE_FACTOR)
     }
 
-    aPanel.expenses({
+    issueBond.expenses("a-panel", {
+      "Truck rental": purchase(40),
       "8 foot steel studs, 4x": purchase(357*4),
       "10 foot steel track, 1x": purchase(433),
       "3/8 inch rouch plywood, 1x": purchase(1795),
@@ -183,35 +186,29 @@ module.exports = library.export(
     })
 
 
-    var zPanel = issueBond("z-panel", "Wall panel Z", "Erik Pukinskis")
+    issueBond("z-panel", "Wall panel Z", "Erik Pukinskis")
 
-    var floorPanel = issueBond("floor-panel", "Floor panel", "Erik Pukinskis")
+    issueBond("floor-panel", "Floor panel", "Erik Pukinskis")
 
-    var jambPanel = issueBond("jamb-panel", "Door jamb panel", "Erik Pukinskis")
+    issueBond("jamb-panel", "Door jamb panel", "Erik Pukinskis")
 
-    var tinyHouse3 = issueBond(null, "Tiny House 3", "Erik Pukinskis")
+    issueBond("tiny-house-3", "Tiny House 3", "Erik Pukinskis")
 
-    tinyHouse3.tasks([
+    issueBond("pergola", "Pergola for mobile kitchen", "Erik Pukinskis")
 
-    ])
-
-    var tinyHouse3 = issueBond(null, "Tiny House 3", "Erik Pukinskis")
-
-    var pergola = issueBond(null, "Pergola for mobile kitchen", "Erik Pukinskis")
-
-    pergola.tasks([
+    issueBond.tasks("pergola", [
       "mark 12 inches from the end of each"])
 
     // Your kitchen is your mobile marketing heart
 
-    var kitchen = issueBond(null, "Falafel Kitchen", "Erik Pukinskis")
+    issueBond("kitchen", "Falafel Kitchen", "Erik Pukinskis")
 
-    kitchen.tasks([
+    issueBond.tasks("kitchen", [
       "Make poulish",
       "Make dough",
       "Make falafel sandwich"])
 
-    kitchen.expenses([
+    issueBond.expenses("kitchen", [
       ["Flat top griddle station", 1, "$263.20"],
       "50 lb bag of flour",
       "Toaster oven",
@@ -236,9 +233,9 @@ module.exports = library.export(
       "Tongs, bowl, silicone spatula",
       "Hand washing station"])
 
-    var pond = issueBond(null, "Pond", "Erik Pukinskis")
+    issueBond("pond", "Pond", "Erik Pukinskis")
 
-    pond.tasks([
+    issueBond.tasks("pond", [
       "roll two 2x4s into 8x16 tarp ", 
       "dig pond, build watershed, lay tarp", 
       "pavers and mortar, build compost basin", 
@@ -253,35 +250,26 @@ module.exports = library.export(
       "fill pond",
       "plant lilies https://www.youtube.com/watch?v=mHpayuscOtM"])
 
-    var chickenCoop = issueBond(null, "Chicken coop", "Erik Pukinskis")
+    issueBond("chicken-coop", "Chicken coop", "Erik Pukinskis")
 
-    chickenCoop.tasks([
+    issueBond.tasks("chicken-coop", [
       "bolt corrugated roofing",
       "cut mortisse and tenon two sets of four 2x2s, four 2x2 rafters, and however many floor boards",
       "built chicken coop",
       "netting with stakes 8x8"])
 
-    var watershed = issueBond(null, "Watershed", "Erik Pukinskis")
-
-    watershed.tasks([
-      chickenCoop,
-      pond,
-      pergola,
-      kitchen,
-      tinyHouse3])
 
     var bonds = [
-      aPanel,
-      zPanel,
-      floorPanel,
-      jambPanel,
-      workshop,
-      tinyHouse3,
-      kitchen,
-      watershed,
-      chickenCoop,
-      pond,
-      pergola,
+      "a-panel",
+      "z-panel",
+      "floor-panel",
+      "jamb-panel",
+      "workshop",
+      "tiny-house-3",
+      "kitchen",
+      "chicken-coop",
+      "pond",
+      "pergola",
     ]
 
     return bonds

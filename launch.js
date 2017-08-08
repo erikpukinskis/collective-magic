@@ -6,7 +6,8 @@
 var library = require("module-library")(require)
 
 
-library.define("collective-magic/launch-tasks", function() { return [
+library.define(
+  "collective-magic/launch-tasks", function() { return [
   "tap Give me work",
   "tap Choose a picture",
   "a picture appears",
@@ -39,7 +40,7 @@ library.define("collective-magic/launch-tasks", function() { return [
   "enter a name and phone number and tap Continue",
   "(click Cancel purchase)",
   "can get a text: so-and-so bought a bond click to generate invoice",
-  "as a worker mark work receipt paid",
+  "as a bond seller, mark receipt paid",
   "clicks tick, they get the first task from the bond: \"Reserve a truck\" Are you ready to clock in?",
   "tap Clock in to rent the truck",
   "tap Clock out",
@@ -60,10 +61,21 @@ library.define("collective-magic/launch-tasks", function() { return [
 
 
 library.using(
-  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "collective-magic/launch-tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "./character", "punch-clock", "./post-button"],
-  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton) {
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "collective-magic/launch-tasks", "basic-styles", "tell-the-universe", "someone-is-a-person", "character", "punch-clock", "post-button", "issue-bond"],
+  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, tasks, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton, issueBond) {
+
+    sellBond.header([
+      element("h1", "Collective Magic Bond Co"),
+      element("p", "est 2017"),
+    ])
 
     watershedBonds.forEach(sellBond)
+
+  character("5n53", "light")
+  character.see("5n53", "investorId", "9a7c")
+  issueBond.registerInvestor("9a7c", "Hamo", "111")
+  issueBond.orderShare("ceng", "a-panel", "9a7c", 19000, 16875)
+  issueBond.markPaid("ceng", {"characterId":"5n53","textSignature":"Eriko"})
 
     var line = element.style(".statements div", {
       "margin-bottom": "10px",
@@ -91,47 +103,53 @@ library.using(
     // characters.load()
     character("7n0l", "brite")
 
-    function giveAssignment(request, response) {
+    function computerAssignment(request, response) {
 
-      var bridge = new BrowserBridge()
-      basicStyles.addTo(bridge)
-
+      var bridge = baseBridge.forResponse(response)
 
       var meId = someoneIsAPerson.getIdFrom(request)
 
       if (meId) {
         var avatar = someoneIsAPerson(bridge, meId)
+        bridge.addToBody(avatar)
       } else {
         someoneIsAPerson.getIdentityFrom(response, "/assignment")
         return
       }
-      
+
+      renderAssignment(bridge, meId, nextTaskId, "Make it so you can "+tasks[nextTaskId]+".", finishedCount, tasks.length, "Collective Magic")
+    }
+
+
+    function renderSession(session) {
+      var transit = session.stopTime ? " helped" : " has been helping"
+
+      var description = session.name+transit+" for "+timeOf(session)
+      return element("li", description)
+    }
+
+    function timeOf(session) {
+      var start = new Date(session.startTime)
+      if (session.stopTime) {
+        var end = new Date(session.stopTime)
+      } else {
+        var end = new Date()
+      }
+
+      var seconds = (end - start)/1000 + 20
+      var minutes = Math.round(seconds/60)
+      return minutes+" minutes"
+    }
+
+
+    function renderAssignment(bridge, meId, nextTaskId, nextTaskText, finishedCount, totalCount, outcome) {
+
       var currentAssignmentId = punchClock.getCurrentAssignmentId(meId)
 
       var workSessions = element(
         "ul",
         punchClock.sessionsForTask(nextTaskId).map(renderSession)
       )
-
-      function renderSession(session) {
-        var transit = session.stopTime ? " helped" : " has been helping"
-
-        var description = session.name+transit+" for "+timeOf(session)
-        return element("li", description)
-      }
-
-      function timeOf(session) {
-        var start = new Date(session.startTime)
-        if (session.stopTime) {
-          var end = new Date(session.stopTime)
-        } else {
-          var end = new Date()
-        }
-
-        var seconds = (end - start)/1000 + 20
-        var minutes = Math.round(seconds/60)
-        return minutes+" minutes"
-      }
 
       var percent = Math.round(finishedCount/tasks.length*100)+"%"
 
@@ -150,26 +168,33 @@ library.using(
       })
 
       var page = element(".lil-page", [
-        element("p", finishedCount+"/"+tasks.length+" til Collective Magic ("+percent+")"),
+        element("p", finishedCount+"/"+totalCount+" til "+outcome+" ("+percent+")"),
         element("h1", "Here's a goal."),
-        element("p", element.style({"min-height": "4em"}), "Make it so you can "+tasks[nextTaskId]+"."),
+        element("p", element.style({"min-height": "4em"}), nextTaskText),
         postButton("It is done.", "/finish", {taskId: nextTaskId}),
         " ",
         clockButton,
         workSessions,
-        avatar,
         element.stylesheet(ulStyle),
       ])  
 
-      bridge
-      .forResponse(response)
-      .send(page.html())
+      bridge.send(page.html())
+    }
+
+
+    function getBondedTask(request, response) {
+
+      var page = element(".lil-page", [
+
+      ])
+
+      baseBridge.forResponse(response).send(page)
     }
 
 
     
     host.onSite(function(site) {
-      site.addRoute("get", "/assignment", giveAssignment)
+      site.addRoute("get", "/assignment", computerAssignment)
 
       function clockOut(meId, taskId) {
         var name = character.getName(meId)
@@ -223,6 +248,8 @@ library.using(
         response.redirect("/assignment")
       })
 
+      site.addRoute("get", "/construction", getBondedTask)
+
       someoneIsAPerson.prepareSite(site)
     })
 
@@ -232,7 +259,8 @@ library.using(
       bridge.send([
         element("h1", "Collective Magic"),
         element("p", "An agent for everyone"),
-        element("p", element("a.button", "Give me work", {href: "/assignment"})),
+        element("p", element("a.button", "Give me construction work", {href: "/construction"})),
+        element("p", element("a.button", "Give me coding work", {href: "/assignment"})),
         element("p", element("a.button", "Buy bonds", {href: "/bond-catalog"})),
       ])
     })
