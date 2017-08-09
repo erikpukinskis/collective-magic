@@ -157,6 +157,12 @@ library.using(
 
     
     host.onSite(function(site) {
+
+      site.addRoute("get", "/tasks/:taskId", function(request, response) {
+        var bondId = issueBond.bondForTask(request.params.taskId)
+        response.redirect("/assignment/"+bondId)
+      })
+
       site.addRoute("get", "/assignment/:bondId", giveAssignment)
 
       function clockOut(meId, taskId) {
@@ -195,7 +201,7 @@ library.using(
         punchClock.start(name, meId, taskId, when)
         workLog.do("punchClock.start", name, meId, taskId, when)
 
-        response.redirect("/assignment")
+        response.redirect("/tasks/"+taskId)
       })
 
       site.addRoute("post", "/work-sessions/stop", function(request, response) {
@@ -206,7 +212,7 @@ library.using(
           clockOut(meId, taskId)
         }
 
-        response.redirect("/assignment")
+        response.redirect("/tasks/"+taskId)
       })
 
       site.addRoute("get", "/construction", getBondedTask)
