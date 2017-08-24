@@ -7,23 +7,58 @@ var library = require("module-library")(require)
 
 
 
+library.define(
+  "to-dollar-string",
+  function() {
+    return function toDollarString(cents) {
+      if (cents < 0) {
+        var negative = true
+        cents = Math.abs(cents)
+      }
+
+      cents = Math.ceil(cents)
+
+      var dollars = Math.floor(cents / 100)
+      var remainder = cents - dollars*100
+      if (remainder < 10) {
+        remainder = "0"+remainder
+      }
+
+      var string = "$"+dollars+"."+remainder
+
+      if (negative) {
+        string = "-"+string
+      }
+
+      return string
+    }
+  }
+)
+
+
+
 
 library.using(
-  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "./launch-bond", "basic-styles", "tell-the-universe", "someone-is-a-person", "character", "punch-clock", "post-button", "issue-bond"],
-  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, launchBond, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton, issueBond) {
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "./launch-bond", "basic-styles", "tell-the-universe", "someone-is-a-person", "character", "punch-clock", "post-button", "issue-bond", "to-dollar-string"],
+  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, launchBond, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton, issueBond, toDollarString) {
+
+    var lineItem = sellBond.lineItem
 
     // TESTING
 
-    character("5n53", "light")
-    character.see("5n53", "investorId", "9a7c")
+    character("rodr", "BERD")
+    character.see("rodr", "investorId", "9a7c")
     issueBond.registerInvestor("9a7c", "Hamo", "111")
     issueBond.orderShare("ceng", "a-panel", "9a7c", 19000, 16875)
-    issueBond.markPaid("ceng", {"characterId":"5n53","textSignature":"Eriko"})
+    issueBond.markPaid("ceng", {"characterId":"rodr","textSignature":"Eriko"})
 
     issueBond.registerInvestor("ba9w", "Zamo", "122")
     issueBond.orderShare("9ovi", "collective-magic-launch", "ba9w", 111000, 100000)
-    issueBond.markPaid("9ovi", {"characterId":"5n53","textSignature":"Ham"})
+    issueBond.markPaid("9ovi", {"characterId":"rodr","textSignature":"Ham"})
 
+    issueBond.invoice("smo6", "a-panel", "BERD (id rodr) worked for 1 minutes on reserve a truck", 33, "2017-08-23")
+    issueBond.markFinished("a-panel_t0")
+    issueBond.markFinished("a-panel_t1")
 
     // COLLECTIVE MAGIC
 
@@ -109,10 +144,11 @@ library.using(
 
       var currentAssignmentId = punchClock.getCurrentAssignmentId(meId)
 
-      var workSessions = element(
-        "ul",
-        punchClock.sessionsForTask(nextTaskId).map(renderSession)
-      )
+      var workSessions = element("ul")
+
+      punchClock.eachSessionOnTask(nextTaskId, function(session) {
+        workSessions.addChild(renderSession(session))
+      })
 
       var percent = Math.round(finishedCount/totalCount*100)+"%"
 
@@ -154,7 +190,50 @@ library.using(
       baseBridge.forResponse(response).send(page)
     }
 
+    function renderBondActivity(bridge, bondId, day) {
 
+      var summary = issueBond.dailySummary(bondId, day)
+      var completed = summary.completedTasks
+      var invoices = summary.invoices
+      var outcome = issueBond.getOutcome(bondId)
+
+      var page = element(".lil-page", [
+        element("h1", "Activity towards "+outcome+" bond on "+day),
+        element("h1", "Tasks completed:")
+      ])
+
+      if (completed.length > 0) {
+        var list = element("ul")
+        completed.forEach(function(task) {
+          list.addChild(element("li", task))
+        })
+        page.addChild(list)
+      } else {
+        page.addChild("p", "No tasks completed")
+      }
+
+      page.addChild(element("h1", "Expenses:"))
+
+      var total = 0
+      if (invoices.length > 0) {
+        var items = element()
+        invoices.forEach(function(invoice) {
+          debugger
+          items.addChild(lineItem(invoice.description, invoice.amount))
+
+          total += invoice.amount
+        })
+        items.addChild(element("p", "Total: "+toDollarString(total)))
+        page.addChild(items)
+      } else {
+        page.addChild("p", "No expenses invoiced")
+      }
+
+
+      bridge.send(page)
+    }
+
+    var bondUniverse = aWildUniverseAppeared("bonds", {issueBond: "issue-bond"})
     
     host.onSite(function(site) {
 
@@ -168,15 +247,36 @@ library.using(
       function clockOut(meId, taskId) {
         var name = character.getName(meId)
         var when = new Date().toString()
-        punchClock.stop(name, meId, taskId, when)
+        var ticket = punchClock.stop(name, meId, taskId, when)
 
         workLog.do("punchClock.stop", name, meId, taskId, when)
+
+        invoiceWork(taskId, ticket)
+      }
+
+      var HOURLY = 2000
+      function invoiceWork(taskId, ticket) {
+        var bondId = issueBond.bondForTask(taskId)
+        var minutes = punchClock.minutes(ticket)
+        var hours = minutes/60.0
+        var cents = Math.ceil(HOURLY*hours)
+        var task = issueBond.getTaskText(taskId)
+        var description = punchClock.describe(ticket)+" on "+task
+
+        var day = issueBond.date()
+
+        var invoiceId = issueBond.invoice(null, bondId, description, cents, day)
+
+        bondUniverse.do("issueBond.invoice", invoiceId, bondId, description, cents, day)
       }
 
       site.addRoute("post", "/finish", function(request, response) {
         var taskId = request.body.taskId
 
-        issueBond.markFinished(taskId)        
+        issueBond.markFinished(taskId)
+
+        bondUniverse.do("issueBond.markFinished", taskId)
+
         var meId = request.cookies.characterId
         var isClockedIn = punchClock.getCurrentAssignmentId(meId) == taskId
 
@@ -216,6 +316,18 @@ library.using(
       })
 
       site.addRoute("get", "/construction", getBondedTask)
+
+      site.addRoute("get", "/daily-summary/:bondId/:day", function(request, response) {
+
+        var bondId = request.params.bondId
+        var day = request.params.day
+        var bridge = baseBridge.forResponse(response)
+
+        renderBondActivity(
+          bridge,
+          bondId,
+          day)
+      })
 
       someoneIsAPerson.prepareSite(site)
     })
