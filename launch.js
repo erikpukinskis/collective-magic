@@ -329,6 +329,14 @@ library.using(
           day)
       })
 
+      // These activity summaries for bondholders were the next thing I was going to work on when I was working on launch.js. But I thought the first thing to get right is the relationship with the worker, so launch-2.js is a reflection of that.
+      
+      // site.addRoute("get", "/batch_messaging", baseBridge.requestHandler(postButton("Send daily activity summaries", "/send_activity_summaries")))
+
+      // site.addRoute("post", "/send_activity_summaries", function(request, response) {
+      //   response.send("sent!")
+      // })
+
       someoneIsAPerson.prepareSite(site)
     })
 
