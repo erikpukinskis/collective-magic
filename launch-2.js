@@ -8,6 +8,12 @@
 // Buy
 // Tiny house
 
+// Note, this failed wildly the first time, because there was no accountability. Better add that I guess:
+
+accountability() {
+  throw new Error("No accountability yet")
+}
+
 function ( bond ) {
   bond (
     "workshop" ) }
@@ -133,6 +139,8 @@ function tabulateInvoice ( lines, estimates )
       "build roof, 6 hours" ,
       6 * 1500 )
 
+    accountability()
+
     bond.settleUp (
       "workshop" ,
       "jan-7-2018@bobby",
@@ -149,6 +157,7 @@ function tabulateInvoice ( lines, estimates )
       "eriks-shares",
       "eriks-buyout",
       32850 )
+
 
 
 // Video moment (mux)
