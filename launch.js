@@ -39,8 +39,8 @@ library.define(
 
 
 library.using(
-  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "./launch-bond", "basic-styles", "tell-the-universe", "someone-is-a-person", "character", "punch-clock", "post-button", "issue-bond", "to-dollar-string"],
-  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, launchBond, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton, issueBond, toDollarString) {
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "./launch-bond", "basic-styles", "tell-the-universe", "someone-is-a-person", "character", "punch-clock", "post-button", "issue-bond", "to-dollar-string", "./editor-dogfood"],
+  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, launchBond, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton, issueBond, toDollarString, editorBond) {
 
     var lineItem = sellBond.lineItem
 
