@@ -39,22 +39,22 @@ library.define(
 
 
 library.using(
-  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "./launch-bond", "basic-styles", "tell-the-universe", "someone-is-a-person", "character", "punch-clock", "post-button", "issue-bond", "to-dollar-string"],
-  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, launchBond, basicStyles, aWildUniverseAppeared, someoneIsAPerson, character, punchClock, postButton, issueBond, toDollarString) {
+  [library.ref(), "./watershed-bonds", "sell-bond", "web-host", "browser-bridge", "web-element", "./launch-bond", "basic-styles", "tell-the-universe", "someone-is-a-person", "creature", "punch-clock", "post-button", "issue-bond", "to-dollar-string"],
+  function(lib, watershedBonds, sellBond, host, BrowserBridge, element, launchBond, basicStyles, aWildUniverseAppeared, someoneIsAPerson, creature, punchClock, postButton, issueBond, toDollarString) {
 
     var lineItem = sellBond.lineItem
 
     // TESTING
 
-    character("rodr", "BERD")
-    character.see("rodr", "investorId", "9a7c")
+    creature("rodr", "BERD")
+    creature.see("rodr", "investorId", "9a7c")
     issueBond.registerInvestor("9a7c", "Hamo", "111")
     issueBond.orderShare("ceng", "a-panel", "9a7c", 19000, 16875)
-    issueBond.markPaid("ceng", {"characterId":"rodr","textSignature":"Eriko"})
+    issueBond.markPaid("ceng", {"creatureId":"rodr","textSignature":"Eriko"})
 
     issueBond.registerInvestor("ba9w", "Zamo", "122")
     issueBond.orderShare("9ovi", "collective-magic-launch", "ba9w", 111000, 100000)
-    issueBond.markPaid("9ovi", {"characterId":"rodr","textSignature":"Ham"})
+    issueBond.markPaid("9ovi", {"creatureId":"rodr","textSignature":"Ham"})
 
     issueBond.invoice("smo6", "a-panel", "BERD (id rodr) worked for 1 minutes on reserve a truck", 33, "2017-08-23")
     issueBond.markFinished("a-panel_t0")
@@ -77,8 +77,8 @@ library.using(
     // var nextTaskCounter = 0
     // var nextTaskId = "0"
 
-    var characters = aWildUniverseAppeared("characters", {
-      character: "./character"
+    var creatures = aWildUniverseAppeared("creatures", {
+      creature: "creature"
     })
 
     var s3Options = {
@@ -86,8 +86,8 @@ library.using(
       secret: process.env.AWS_SECRET_ACCESS_KEY,
       bucket: process.env.S3_BUCKET_NAME,
     }
-    // characters.persistToS3(s3Options)
-    // characters.load()
+    // creatures.persistToS3(s3Options)
+    // creatures.load()
 
 
     function giveAssignment(request, response) {
@@ -245,7 +245,7 @@ library.using(
       site.addRoute("get", "/assignment/:bondId", giveAssignment)
 
       function clockOut(meId, taskId) {
-        var name = character.getName(meId)
+        var name = creatures.getName(meId)
         var when = new Date().toString()
         var ticket = punchClock.stop(name, meId, taskId, when)
 
@@ -277,7 +277,7 @@ library.using(
 
         bondUniverse.do("issueBond.markFinished", taskId)
 
-        var meId = request.cookies.characterId
+        var meId = request.cookies.creatureId
         var isClockedIn = punchClock.getCurrentAssignmentId(meId) == taskId
 
         if (isClockedIn) {
@@ -294,8 +294,8 @@ library.using(
 
       site.addRoute("post", "/work-sessions", function(request, response) {
         var taskId = request.body.taskId
-        var meId = request.cookies.characterId
-        var name = character.getName(meId)
+        var meId = request.cookies.creatureId
+        var name = creature.getName(meId)
         var when = new Date().toString()
 
         punchClock.start(name, meId, taskId, when)
@@ -306,7 +306,7 @@ library.using(
 
       site.addRoute("post", "/work-sessions/stop", function(request, response) {
         var taskId = request.body.taskId
-        var meId = request.cookies.characterId
+        var meId = request.cookies.creatureId
 
         if (punchClock.getCurrentAssignmentId(meId) == taskId) {
           clockOut(meId, taskId)

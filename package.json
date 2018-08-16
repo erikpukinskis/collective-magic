@@ -14,7 +14,8 @@
     "issue-bond": "*",
     "sell-bond": "*",
     "someone-is-a-person": "*",
-    "punch-clock": "*"
+    "punch-clock": "*",
+    "creature": "*"
   },
   "repository": {
     "type": "git",
